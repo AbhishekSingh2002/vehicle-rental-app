@@ -1,0 +1,248 @@
+{
+  "info": {
+    "name": "Vehicle Rental API",
+    "description": "Complete API collection for vehicle rental booking system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Get Wheels",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/wheels",
+          "host": ["{{baseUrl}}"],
+          "path": ["wheels"]
+        }
+      }
+    },
+    {
+      "name": "Get All Types",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/types",
+          "host": ["{{baseUrl}}"],
+          "path": ["types"]
+        }
+      }
+    },
+    {
+      "name": "Get Types by Wheels (4)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/types?wheels=4",
+          "host": ["{{baseUrl}}"],
+          "path": ["types"],
+          "query": [
+            {
+              "key": "wheels",
+              "value": "4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Types by Wheels (2)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/types?wheels=2",
+          "host": ["{{baseUrl}}"],
+          "path": ["types"],
+          "query": [
+            {
+              "key": "wheels",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Vehicles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/vehicles",
+          "host": ["{{baseUrl}}"],
+          "path": ["vehicles"]
+        }
+      }
+    },
+    {
+      "name": "Get Vehicles by Type",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/vehicles?typeId=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["vehicles"],
+          "query": [
+            {
+              "key": "typeId",
+              "value": "1",
+              "description": "Change to 1, 2, 3, or 4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Vehicle by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/vehicles/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["vehicles", "1"]
+        }
+      }
+    },
+    {
+      "name": "Create Booking - Success",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Abhishek\",\n  \"lastName\": \"Singh\",\n  \"vehicleId\": 1,\n  \"startDate\": \"2025-11-10\",\n  \"endDate\": \"2025-11-12\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        }
+      }
+    },
+    {
+      "name": "Create Booking - Overlap Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"vehicleId\": 1,\n  \"startDate\": \"2025-11-11\",\n  \"endDate\": \"2025-11-13\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        },
+        "description": "Run this after creating the first booking to test overlap detection"
+      }
+    },
+    {
+      "name": "Create Booking - Validation Error (Past Date)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"vehicleId\": 1,\n  \"startDate\": \"2020-01-01\",\n  \"endDate\": \"2020-01-05\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        }
+      }
+    },
+    {
+      "name": "Check Availability - Available",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/check-availability?vehicleId=2&startDate=2025-12-01&endDate=2025-12-05",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "check-availability"],
+          "query": [
+            {
+              "key": "vehicleId",
+              "value": "2"
+            },
+            {
+              "key": "startDate",
+              "value": "2025-12-01"
+            },
+            {
+              "key": "endDate",
+              "value": "2025-12-05"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Bookings for Vehicle",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/vehicle/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "vehicle", "1"]
+        }
+      }
+    },
+    {
+      "name": "Cancel Booking",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/1/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "1", "cancel"]
+        },
+        "description": "Replace '1' with actual booking ID"
+      }
+    }
+  ]
+}

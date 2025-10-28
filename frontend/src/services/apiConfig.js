@@ -3,10 +3,10 @@
 
 export const API_CONFIG = {
   // Base URLs for different environments
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.REACT_APP_API_URL || '/api',
   
   // Timeout settings
-  timeout: 30000, // 30 seconds
+  timeout: 10000, // 30 seconds
   
   // Retry settings
   retryAttempts: 3,
@@ -54,4 +54,7 @@ export async function checkApiHealth() {
   }
 }
 
-export default API_CONFIG;
+export default {
+  baseURL: process.env.REACT_APP_API_URL || '/api',
+  timeout: 10000,
+};

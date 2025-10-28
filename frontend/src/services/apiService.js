@@ -1,5 +1,5 @@
 // frontend/src/services/apiService.js
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Get authentication token from localStorage

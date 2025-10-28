@@ -99,6 +99,7 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   maxLength={50}
+                  autoComplete="given-name"
                   className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                   placeholder="John"
                 />
@@ -115,6 +116,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
                 maxLength={50}
+                autoComplete="family-name"
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                 placeholder="Doe"
               />
@@ -134,6 +136,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                autoComplete="email"
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                 placeholder="you@example.com"
               />
@@ -153,6 +156,7 @@ export default function RegisterPage() {
                 value={formData.phone}
                 onChange={handleChange}
                 required
+                autoComplete="tel"
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                 placeholder="+91 98765 43210"
               />
@@ -173,6 +177,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
                 minLength={6}
+                autoComplete="new-password"
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                 placeholder="••••••••"
               />
@@ -193,6 +198,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                autoComplete="new-password"
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
                 placeholder="••••••••"
               />

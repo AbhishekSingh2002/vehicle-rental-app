@@ -1,6 +1,7 @@
 // frontend/src/components/booking/BookingWizard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   Calendar,
   CheckCircle,
@@ -14,7 +15,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getTypes, getVehicles, createBooking } from '../../services/api';
+import { getTypes, getVehicles, createBooking, checkAvailability, getVehicleById } from '../../services/api';
 import { formatDate, calculateDays } from '../../utils/helpers';
 
 const STEPS = ['Type', 'Model', 'Vehicle', 'Dates'];
@@ -31,6 +32,7 @@ const itemVariants = {
 
 export default function BookingWizard({ onSuccess }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [step, setStep] = useState(1);
   const [wheels, setWheels] = useState(null);
@@ -122,31 +124,80 @@ export default function BookingWizard({ onSuccess }) {
   };
 
   const handleSubmit = async (e) => {
+    console.log('Form submitted');
     e.preventDefault();
     setError('');
+    
+    // Validate inputs
+    console.log('Form data:', { startDate, endDate, selectedVehicle });
+    
     if (!startDate || !endDate) {
+      console.log('Missing dates');
       setError('Please select both start and end dates');
       return;
     }
     if (!selectedVehicle) {
+      console.log('No vehicle selected');
       setError('Please select a vehicle');
+      return;
+    }
+    if (new Date(startDate) >= new Date(endDate)) {
+      console.log('Invalid date range');
+      setError('End date must be after start date');
       return;
     }
 
     try {
       setLoading(true);
-      const totalPrice = calculateTotalPrice(selectedVehicle.price, startDate, endDate);
+      
+      // Prepare booking data according to backend expectations
       const bookingData = {
         vehicleId: selectedVehicle.id,
-        startDate,
-        endDate,
-        totalPrice
+        startDate: new Date(startDate).toISOString().split('T')[0],
+        endDate: new Date(endDate).toISOString().split('T')[0]
       };
-      await createBooking(bookingData);
-      if (typeof onSuccess === 'function') onSuccess();
-      else navigate('/my-bookings', { state: { bookingSuccess: true } });
+      
+      console.log('Submitting booking:', bookingData);
+      
+      // Check vehicle exists on backend (avoid 'Vehicle not found')
+      try {
+        await getVehicleById(selectedVehicle.id);
+      } catch (e) {
+        setError('Selected vehicle no longer exists. Please go back and choose another vehicle.');
+        setLoading(false);
+        return;
+      }
+      
+      // Check availability first
+      const isAvailable = await checkAvailability(
+        selectedVehicle.id, 
+        bookingData.startDate, 
+        bookingData.endDate
+      );
+      
+      if (!isAvailable.available) {
+        throw new Error('The selected vehicle is not available for the chosen dates');
+      }
+      
+      // Create the booking
+      const result = await createBooking(bookingData);
+      console.log('Booking successful:', result);
+      
+      // Show success message
+      if (typeof onSuccess === 'function') {
+        onSuccess(result);
+      } else {
+        navigate('/my-bookings', { 
+          state: { 
+            bookingSuccess: true,
+            bookingId: result.id
+          } 
+        });
+      }
+      
     } catch (err) {
-      setError(err?.message || 'Failed to create booking');
+      console.error('Booking error:', err);
+      setError(err?.response?.data?.error || err.message || 'Failed to create booking');
     } finally {
       setLoading(false);
     }
@@ -279,7 +330,10 @@ export default function BookingWizard({ onSuccess }) {
         <p className="text-gray-500">Choose your rental period</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(e);
+      }} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="form-label">Start Date</label>

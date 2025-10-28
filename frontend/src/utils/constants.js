@@ -1,7 +1,7 @@
 // frontend/src/utils/constants.js
 // Application constants
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 export const WHEEL_OPTIONS = [
   { value: 2, label: 'Bike (2 Wheeler)', icon: '🏍️' },

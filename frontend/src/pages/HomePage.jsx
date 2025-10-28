@@ -50,7 +50,7 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => navigate('/booking')}
+              onClick={() => navigate('/book')}
               className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition shadow-lg"
             >
               Start Booking
@@ -115,7 +115,7 @@ export default function HomePage() {
             Book your vehicle now and enjoy a seamless rental experience
           </p>
           <button
-            onClick={() => navigate('/booking')}
+            onClick={() => navigate('/book')}
             className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition"
           >
             Book Now

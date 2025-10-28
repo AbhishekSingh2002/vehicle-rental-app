@@ -31,7 +31,7 @@ export default function BookingPage() {
             <Link to="/" className="navbar-link">Home</Link>
             <Link to="/book" className="navbar-link" style={{ color: 'var(--primary)' }}>Book Now</Link>
             <Link to="/my-bookings" className="navbar-link">My Bookings</Link>
-            <Link to="/auth" className="navbar-link">Login / Sign Up</Link>
+            <Link to="/login" className="navbar-link">Login / Sign Up</Link>
           </nav>
         </header>
 

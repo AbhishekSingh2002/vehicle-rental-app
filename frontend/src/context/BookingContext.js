@@ -1,7 +1,7 @@
 // frontend/src/context/BookingContext.js
 // Booking context for managing booking state across the app
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import * as api from '../services/api';
 
 const BookingContext = createContext(null);
@@ -32,15 +32,13 @@ export const BookingProvider = ({ children }) => {
   };
 
   // Fetch user's bookings
-  const fetchMyBookings = async () => {
+  const fetchMyBookings = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      // TODO: Replace with actual API call
-      // For now, return empty array as we don't have user-specific bookings
-      const userBookings = [];
-      setBookings(userBookings);
+      const userBookings = await api.getMyBookings();
+      setBookings(Array.isArray(userBookings) ? userBookings : []);
       return { success: true, bookings: userBookings };
     } catch (err) {
       const errorMessage = err.message || 'Failed to fetch bookings';
@@ -49,7 +47,7 @@ export const BookingProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Empty dependency array means this function is created once
 
   // Cancel a booking
   const cancelBooking = async (bookingId) => {

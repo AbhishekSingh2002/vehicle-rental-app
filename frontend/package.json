@@ -5,16 +5,20 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@heroicons/react": "^2.2.0",
+    "axios": "^1.6.0",
     "framer-motion": "^12.23.24",
+    "history": "^5.3.0",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.263.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.30.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.6"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "set DISABLE_ESLINT_PLUGIN=true&&set GENERATE_SOURCEMAP=false&&set HTTPS=true&&set PORT=3000&&set HOST=localhost&&set EXTEND_ESLINT=true&&set BROWSER=none&&set DANGEROUSLY_DISABLE_HOST_CHECK=true&&set PUBLIC_URL=http://localhost:3000&&set REACT_APP_API_URL=/api&&set INLINE_RUNTIME_CHUNK=false&&react-scripts start",
+    "build": "set INLINE_RUNTIME_CHUNK=false&&set GENERATE_SOURCEMAP=false&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

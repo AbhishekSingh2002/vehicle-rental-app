@@ -32,18 +32,25 @@ vehicle-rental-app/
 │   │   ├── app.js
 │   │   │
 │   │   ├── routes/
-│   │   │   └── index.js
+│   │   │   ├── index.js
+│   │   │   ├── auth.js
+│   │   │   └── authRoutes.js
 │   │   │
 │   │   ├── controllers/
 │   │   │   ├── typesController.js
 │   │   │   ├── vehiclesController.js
-│   │   │   └── bookingsController.js
+│   │   │   ├── bookingsController.js
+│   │   │   └── authController.js
 │   │   │
 │   │   ├── services/
 │   │   │   └── bookingService.js
 │   │   │
-│   │   └── lib/
-│   │       └── prismaClient.js (optional)
+│   │   ├── lib/
+│   │   │   └── prismaClient.js (optional)
+│   │   └── middleware/
+│   │       ├── auth.js
+│   │       ├── errorHandler.js
+│   │       └── rateLimit.js
 │   │
 │   └── logs/ (git-ignored)
 │       ├── error.log
@@ -79,10 +86,35 @@ vehicle-rental-app/
         ├── hooks/
         │   └── useBookingWizard.js
         │
+        ├── context/
+        │   ├── AuthContext.js
+        │   ├── AuthContext.jsx
+        │   └── BookingContext.js
+        │
         ├── services/
-        │   └── api.js
+        │   ├── api.js
+        │   ├── apiConfig.js
+        │   ├── apiInterceptor.js
+        │   ├── apiService.js
+        │   └── authService.js
+        │
+        ├── layouts/
+        │   ├── AuthLayout.jsx
+        │   └── MainLayout.jsx
+        │
+        ├── pages/
+        │   ├── HomePage.jsx
+        │   ├── BookingPage.jsx
+        │   ├── LoginPage.jsx
+        │   ├── RegisterPage.jsx
+        │   └── MyBookingsPage.jsx
+        │
+        ├── hooks/
+        │   └── useBookingWizard.js
         │
         └── utils/
+            ├── constants.js
+            ├── helpers.js
             └── validation.js
 ```
 

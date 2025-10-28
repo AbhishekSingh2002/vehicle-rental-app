@@ -2,7 +2,11 @@
 // Authentication context for managing user state
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { LOCAL_STORAGE_KEYS } from '../utils/constants';
+
+const LOCAL_STORAGE_KEYS = {
+  AUTH_TOKEN: 'auth_token',
+  USER: 'user',
+};
 
 const AuthContext = createContext(null);
 
@@ -13,42 +17,52 @@ export const AuthProvider = ({ children }) => {
 
   // Load user from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
-    const storedUser = localStorage.getItem(LOCAL_STORAGE_KEYS.USER);
+    try {
+      const storedToken = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
+      const storedUser = localStorage.getItem(LOCAL_STORAGE_KEYS.USER);
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error('Failed to parse stored user:', e);
+          localStorage.removeItem(LOCAL_STORAGE_KEYS.USER);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading auth data:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }, []);
 
   // Login function
   const login = async (email, password) => {
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || '/api'}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Login failed');
       }
 
       const data = await response.json();
       
       // Store token and user
       localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, data.token);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.USER, JSON.stringify(data.user));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.USER, JSON.stringify({ ...data.user, token: data.token }));
       
       setToken(data.token);
-      setUser(data.user);
+      setUser({ ...data.user, token: data.token });
       
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (error) {
+      console.error('Login error:', error);
       return { success: false, error: error.message };
     }
   };
@@ -56,28 +70,29 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (userData) => {
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || '/api'}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       });
 
       if (!response.ok) {
-        throw new Error('Registration failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Registration failed');
       }
 
       const data = await response.json();
       
       // Auto-login after registration
       localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, data.token);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.USER, JSON.stringify(data.user));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.USER, JSON.stringify({ ...data.user, token: data.token }));
       
       setToken(data.token);
-      setUser(data.user);
+      setUser({ ...data.user, token: data.token });
       
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (error) {
+      console.error('Registration error:', error);
       return { success: false, error: error.message };
     }
   };
@@ -96,9 +111,11 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // Check if user is authenticated
+  // Check if user is authenticated - returns boolean
   const isAuthenticated = () => {
-    return !!token && !!user;
+    const hasToken = !!token;
+    const hasUser = !!user;
+    return hasToken && hasUser;
   };
 
   const value = {
@@ -111,6 +128,19 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     isAuthenticated,
   };
+
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

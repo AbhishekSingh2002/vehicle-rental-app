@@ -90,7 +90,7 @@ export default function MyBookingsPage() {
               Start your journey by booking your first vehicle
             </p>
             <button
-              onClick={() => navigate('/booking')}
+              onClick={() => navigate('/book')}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
             >
               Book Now
@@ -126,7 +126,27 @@ export default function MyBookingsPage() {
                       </div>
                     </div>
 
-                    <div className="mt-3 text-sm text-gray-500">
+                    <div className="mt-2 text-sm text-gray-600">
+                      {(() => {
+                        const price = booking.vehicle?.metadata?.pricePerDay || booking.vehicle?.price || 0;
+                        return price ? `Price: ₹${price.toLocaleString()} / day` : '';
+                      })()}
+                    </div>
+
+                    <div className="mt-3 text-sm text-gray-700 font-semibold">
+                      {(() => {
+                        const serverTotal = booking.totalAmount;
+                        if (typeof serverTotal === 'number' && !isNaN(serverTotal)) {
+                          return `Total: ₹${serverTotal.toLocaleString()}`;
+                        }
+                        const days = calculateDays(booking.startDate, booking.endDate);
+                        const price = booking.vehicle?.metadata?.pricePerDay || booking.vehicle?.price || 0;
+                        const total = Math.max(1, days) * price;
+                        return `Total: ₹${total.toLocaleString()}`;
+                      })()}
+                    </div>
+
+                    <div className="mt-2 text-sm text-gray-500">
                       Booking ID: #{booking.id}
                     </div>
                   </div>

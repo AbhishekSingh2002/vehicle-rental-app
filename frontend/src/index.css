@@ -1,46 +1,461 @@
-/* frontend/src/index.css - light reset */
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Apply box-sizing safely without removing margins/paddings globally */
-*, *::before, *::after {
+/* Custom CSS Variables for Modern UI */
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* Neutral Colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  /* Borders */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* Do not force global svg/image rules here — keep those scoped in modernUI.css */
-
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  color: #1a202c;
-  /* Add smooth scrolling for better UX */
-  scroll-behavior: smooth;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Custom scrollbar */
+/* Custom Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Utility Classes */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--primary-gradient);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--primary-dark);
+}
+
+/* Custom Components */
+@layer components {
+  /* Modern Button Styles */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold border-none cursor-pointer transition-all relative overflow-hidden whitespace-nowrap px-6 py-3 rounded-lg;
+  }
+  
+  .btn-primary {
+    background: var(--primary-gradient);
+    @apply text-white;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary border-2 border-solid border-primary;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-primary text-white;
+  }
+  
+  /* Modern Card Styles */
+  .card {
+    @apply bg-white rounded-2xl p-6 shadow-md transition-all border border-gray-100;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+  }
+  
+  .card-header {
+    @apply mb-4 pb-4 border-b border-gray-100;
+  }
+  
+  .card-title {
+    @apply text-xl font-bold text-gray-900;
+  }
+  
+  /* Modern Input Styles */
+  .form-group {
+    @apply mb-6;
+  }
+  
+  .form-label {
+    @apply block mb-2 font-semibold text-sm text-gray-700;
+    letter-spacing: 0.025em;
+  }
+  
+  .form-input {
+    @apply w-full px-4 py-3.5 text-base border-2 border-gray-200 rounded-lg transition-all bg-white;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .form-input::placeholder {
+    @apply text-gray-400;
+  }
+  
+  /* Modern Progress Bar */
+  .progress-container {
+    @apply mb-8;
+  }
+  
+  .progress-steps {
+    @apply flex justify-between items-center mb-4;
+  }
+  
+  .progress-step {
+    @apply flex flex-col items-center flex-1 relative;
+  }
+  
+  .progress-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+    top: 1.25rem;
+    left: calc(50% + 1.25rem);
+    width: calc(100% - 2.5rem);
+    height: 2px;
+    background: var(--gray-200);
+    transition: background var(--transition-slow);
+  }
+  
+  .progress-step.active:not(:last-child)::after {
+    background: var(--primary-gradient);
+  }
+  
+  .progress-number {
+    @apply w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm transition-all relative z-10;
+  }
+  
+  .progress-step.active .progress-number {
+    background: var(--primary-gradient);
+    @apply text-white;
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .progress-step.completed .progress-number {
+    @apply bg-success text-white;
+  }
+  
+  .progress-label {
+    @apply mt-2 text-xs text-gray-600 font-medium text-center;
+  }
+  
+  .progress-step.active .progress-label {
+    @apply text-primary font-semibold;
+  }
+  
+  /* Modern Vehicle Card */
+  .vehicle-card {
+    @apply bg-white rounded-2xl p-6 cursor-pointer transition-all border-2 border-transparent relative overflow-hidden;
+  }
+  
+  .vehicle-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1 transition-transform pointer-events-none;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+  }
+  
+  .vehicle-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-2xl);
+    border-color: var(--primary-light);
+  }
+  
+  .vehicle-card:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .vehicle-card.selected {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  }
+  
+  .vehicle-card.selected::before {
+    transform: scaleX(1);
+  }
+  
+  .vehicle-icon {
+    @apply w-16 h-16 mx-auto mb-4 p-4 bg-gray-50 rounded-full flex items-center justify-center transition-all;
+  }
+  
+  .vehicle-card:hover .vehicle-icon {
+    background: var(--primary-gradient);
+    transform: scale(1.1) rotate(5deg);
+  }
+  
+  .vehicle-card:hover .vehicle-icon svg {
+    @apply text-white;
+  }
+  
+  .vehicle-name {
+    @apply text-lg font-bold text-gray-900 mb-2 text-center;
+  }
+  
+  .vehicle-meta {
+    @apply text-sm text-gray-600 text-center;
+  }
+  
+  /* Modern Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-full uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    @apply text-success;
+  }
+  
+  .badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    @apply text-warning;
+  }
+  
+  .badge-error {
+    background: rgba(239, 68, 68, 0.1);
+    @apply text-error;
+  }
+  
+  .badge-info {
+    background: rgba(59, 130, 246, 0.1);
+    @apply text-primary;
+  }
+  
+  /* Modern Alert */
+  .alert {
+    @apply py-4 px-6 rounded-lg flex items-center gap-4 mb-6 border-l-4;
+  }
+  
+  .alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    @apply border-success text-success;
+  }
+  
+  .alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    @apply border-error text-error;
+  }
+  
+  .alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    @apply border-primary text-primary;
+  }
+  
+  /* Modern Loading Spinner */
+  .spinner {
+    @apply w-8 h-8 border-[3px] border-gray-200 border-t-primary rounded-full;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  /* Modern Container */
+  .container {
+    @apply max-w-7xl mx-auto px-6;
+  }
+  
+  .container-sm {
+    @apply max-w-3xl;
+  }
+  
+  /* Modern Glassmorphism Effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Modern Grid Layout */
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Modern Glass Effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Ensure pseudo-elements don't block clicks */
+*::before,
+*::after {
+  pointer-events: none;
+}
+
+/* Ensure clickable elements have proper pointer events */
+button,
+a,
+[role="button"],
+input[type="button"],
+input[type="submit"] {
+  pointer-events: auto;
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+button:disabled,
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .show-mobile {
+    display: none;
+  }
 }

@@ -12,33 +12,62 @@
 
 1. **Clone the repository**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/your-username/vehicle-rental-app.git
    cd vehicle-rental-app
    ```
 
-2. **Start all services**
+2. **Set up environment variables**
    ```bash
-   docker-compose up -d
+   # Backend
+   cp backend/.env.example backend/.env
+   # Frontend
+   cp frontend/.env.example frontend/.env.local
    ```
 
-3. **Check service status**
+3. **Update environment variables** (edit the .env files as needed)
+   - Set `NODE_ENV=production` for production
+   - Configure database connection
+   - Set up JWT secrets
+   - Configure SMTP for emails
+
+4. **Start all services**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+5. **Run database migrations**
+   ```bash
+   docker-compose exec backend npx prisma migrate deploy
+   ```
+
+6. **Check service status**
    ```bash
    docker-compose ps
    ```
 
-4. **View logs**
+7. **View logs**
    ```bash
+   # All services
+   docker-compose logs -f
+   
+   # Specific service
    docker-compose logs -f backend
+   docker-compose logs -f frontend
+   docker-compose logs -f db
    ```
 
-5. **Access the application**
-   - Backend API: `http://localhost:3001`
-   - Frontend: `http://localhost:3000`
-   - Database: `localhost:5432`
+8. **Access the application**
+   - Frontend: `http://your-domain.com` or `http://localhost:3000`
+   - Backend API: `http://your-domain.com/api` or `http://localhost:3001/api`
+   - Database: `localhost:5432` (internal to Docker network)
+   - Prisma Studio (development only): `http://localhost:5555`
 
-### Docker Commands
+### Docker Commands Cheat Sheet
 
 ```bash
+# Start services in detached mode
+docker-compose up -d
+
 # Stop all services
 docker-compose down
 
@@ -48,26 +77,71 @@ docker-compose down -v
 # Rebuild containers after code changes
 docker-compose up -d --build
 
-# Execute commands in backend container
+# View running containers
+docker ps
+docker-compose ps
+
+# Execute commands in containers
 docker-compose exec backend npm run seed
 docker-compose exec backend npx prisma studio
+docker-compose exec db psql -U postgres
 
-# View database logs
-docker-compose logs db
+# View logs
+docker-compose logs -f
+docker-compose logs -f backend
+docker-compose logs -f frontend
 
-# Restart a specific service
-docker-compose restart backend
+# Restart services
+docker-compose restart
+
+# Check resource usage
+docker stats
+
+# Remove all unused containers, networks, and images
+docker system prune -a
+
+# Update containers
+docker-compose pull
+docker-compose up -d
 ```
 
----
+### Production Environment Variables
+
+#### Backend (`.env`)
+```env
+NODE_ENV=production
+PORT=3001
+DATABASE_URL="postgresql://user:password@db:5432/vehicle_rental?schema=public"
+JWT_SECRET=your-secure-jwt-secret
+JWT_EXPIRES_IN=7d
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-email-password
+FRONTEND_URL=https://your-domain.com
+```
+
+#### Frontend (`.env.production`)
+```env
+REACT_APP_API_URL=https://your-domain.com/api
+REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+NODE_ENV=production
+```
 
 ## 🖥️ Local Development Setup
 
-### Backend
+### Prerequisites
+- Node.js 18+
+- npm 9+
+- PostgreSQL 14+
+- Git
 
-1. **Install dependencies**
+### Backend Setup
+
+1. **Clone and install dependencies**
    ```bash
-   cd backend
+   git clone https://github.com/your-username/vehicle-rental-app.git
+   cd vehicle-rental-app/backend
    npm install
    ```
 
@@ -78,27 +152,42 @@ docker-compose restart backend
    
    Edit `.env`:
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/vehicle_rental"
-   PORT=3001
+   # Server
    NODE_ENV=development
+   PORT=3001
+   
+   # Database
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/vehicle_rental_dev?schema=public"
+   
+   # Authentication
+   JWT_SECRET=dev-secret-key-change-in-production
+   JWT_EXPIRES_IN=7d
+   
+   # Email (optional for development)
+   SMTP_HOST=smtp.ethereal.email
+   SMTP_PORT=587
+   SMTP_USER=your-email@ethereal.email
+   SMTP_PASS=your-ethereal-password
+   
+   # Frontend URL for CORS
+   FRONTEND_URL=http://localhost:3000
    ```
 
-3. **Start PostgreSQL**
+3. **Set up PostgreSQL**
    ```bash
-   # Using Docker
+   # Using Docker (recommended)
    docker run --name vehicle-rental-db \
-     -e POSTGRES_USER=vehicleuser \
-     -e POSTGRES_PASSWORD=vehiclepass \
-     -e POSTGRES_DB=vehicle_rental \
+     -e POSTGRES_USER=postgres \
+     -e POSTGRES_PASSWORD=postgres \
+     -e POSTGRES_DB=vehicle_rental_dev \
      -p 5432:5432 \
      -d postgres:15-alpine
-
+   
    # Or using local PostgreSQL
-   sudo systemctl start postgresql
-   createdb vehicle_rental
+   createdb vehicle_rental_dev
    ```
 
-4. **Run migrations and seed**
+4. **Run migrations and seed data**
    ```bash
    npx prisma migrate dev --name init
    npm run seed
@@ -106,33 +195,203 @@ docker-compose restart backend
 
 5. **Start development server**
    ```bash
+   # Development mode with hot-reload
    npm run dev
+   
+   # Or production build
+   npm run build
+   npm start
    ```
 
-### Frontend
+### Frontend Setup
 
 1. **Install dependencies**
    ```bash
-   cd frontend
+   cd ../frontend
    npm install
    ```
 
-2. **Configure API URL** (if needed)
+2. **Configure environment variables**
    Create `.env.local`:
    ```env
+   # API Configuration
    REACT_APP_API_URL=http://localhost:3001/api
+   
+   # Google Maps (optional)
+   REACT_APP_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+   
+   # Environment
+   NODE_ENV=development
    ```
 
 3. **Start development server**
    ```bash
+   # Development mode with hot-reload
    npm start
+   
+   # Or production build
+   npm run build
+   serve -s build
    ```
 
----
+4. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:3001
+   - API Documentation: http://localhost:3001/api-docs
 
 ## ☁️ Production Deployment
 
-### Option 1: Heroku Deployment
+### Option 1: VPS Deployment (Recommended)
+
+#### Prerequisites
+- Ubuntu 22.04 LTS server
+- Domain name (optional but recommended)
+- SSH access to server
+- Basic Linux command line knowledge
+
+#### Server Setup
+
+1. **Connect to your server**
+   ```bash
+   ssh user@your-server-ip
+   ```
+
+2. **Update system packages**
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+3. **Install required packages**
+   ```bash
+   # Install Node.js and npm
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt install -y nodejs
+   
+   # Install PM2 process manager
+   sudo npm install -g pm2
+   
+   # Install PostgreSQL
+   sudo apt install -y postgresql postgresql-contrib
+   
+   # Install Nginx
+   sudo apt install -y nginx
+   
+   # Install Certbot for SSL
+   sudo apt install -y certbot python3-certbot-nginx
+   ```
+
+4. **Set up PostgreSQL**
+   ```bash
+   # Create database and user
+   sudo -u postgres psql -c "CREATE DATABASE vehicle_rental_prod;"
+   sudo -u postgres psql -c "CREATE USER vehicleuser WITH PASSWORD 'securepassword';"
+   sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vehicle_rental_prod TO vehicleuser;"
+   ```
+
+#### Backend Deployment
+
+1. **Clone repository**
+   ```bash
+   cd /var/www
+   sudo git clone https://github.com/your-username/vehicle-rental-app.git
+   sudo chown -R $USER:$USER /var/www/vehicle-rental-app
+   cd vehicle-rental-app/backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install --production
+   ```
+
+3. **Set up environment**
+   ```bash
+   cp .env.example .env
+   nano .env  # Edit with production values
+   ```
+
+4. **Run migrations**
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+5. **Build and start with PM2**
+   ```bash
+   npm run build
+   pm2 start dist/index.js --name "vehicle-rental-api"
+   pm2 save
+   pm2 startup  # Follow instructions to enable auto-start on boot
+   ```
+
+#### Frontend Deployment
+
+1. **Build the frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   npm run build
+   ```
+
+2. **Install serve**
+   ```bash
+   sudo npm install -g serve
+   ```
+
+3. **Start frontend with PM2**
+   ```bash
+   pm2 serve build 3000 --spa --name "vehicle-rental-frontend"
+   pm2 save
+   ```
+
+#### Nginx Configuration
+
+1. **Create Nginx config**
+   ```bash
+   sudo nano /etc/nginx/sites-available/vehicle-rental
+   ```
+
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com www.your-domain.com;
+    
+       # Frontend
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+    
+       # Backend API
+       location /api {
+           proxy_pass http://localhost:3001;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+   ```
+
+2. **Enable the site**
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/vehicle-rental /etc/nginx/sites-enabled/
+   sudo nginx -t  # Test config
+   sudo systemctl restart nginx
+   ```
+
+3. **Set up SSL with Let's Encrypt**
+   ```bash
+   sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+   ```
+
+### Option 2: Heroku Deployment
 
 #### Backend Deployment
 
@@ -145,111 +404,31 @@ docker-compose restart backend
 2. **Create Heroku app**
    ```bash
    cd backend
-   heroku create vehicle-rental-api
-   ```
-
-3. **Add PostgreSQL addon**
-   ```bash
-   heroku addons:create heroku-postgresql:mini
-   ```
-
-4. **Set environment variables**
-   ```bash
+   heroku create your-app-name
+   heroku addons:create heroku-postgresql:hobby-dev
    heroku config:set NODE_ENV=production
    ```
 
-5. **Create Procfile**
-   ```
-   web: npm start
-   release: npx prisma migrate deploy && npx prisma db seed
-   ```
-
-6. **Deploy**
+3. **Deploy to Heroku**
    ```bash
    git push heroku main
-   ```
-
-7. **Verify deployment**
-   ```bash
-   heroku logs --tail
-   heroku open
+   heroku run npx prisma migrate deploy
    ```
 
 #### Frontend Deployment
 
-1. **Build production bundle**
+1. **Install Vercel CLI**
    ```bash
-   cd frontend
-   npm run build
+   npm install -g vercel
    ```
 
 2. **Deploy to Vercel**
    ```bash
-   npm install -g vercel
-   vercel --prod
-   ```
-
-   Or deploy to Netlify:
-   ```bash
-   npm install -g netlify-cli
-   netlify deploy --prod --dir=build
-   ```
-
-3. **Set environment variables**
-   ```bash
-   # On Vercel/Netlify dashboard
-   REACT_APP_API_URL=https://your-api.herokuapp.com/api
-   ```
-
----
-
-### Option 2: AWS Deployment
-
-#### Using AWS Elastic Beanstalk
-
-1. **Install EB CLI**
-   ```bash
-   pip install awsebcli
-   ```
-
-2. **Initialize EB application**
-   ```bash
-   cd backend
-   eb init -p node.js vehicle-rental-api
-   ```
-
-3. **Create environment**
-   ```bash
-   eb create production
-   ```
-
-4. **Set up RDS PostgreSQL**
-   - Go to AWS RDS Console
-   - Create PostgreSQL 15 instance
-   - Note connection details
-
-5. **Set environment variables**
-   ```bash
-   eb setenv DATABASE_URL="postgresql://user:pass@host:5432/db"
-   eb setenv NODE_ENV=production
-   ```
-
-6. **Deploy**
-   ```bash
-   eb deploy
-   ```
-
-#### Frontend on S3 + CloudFront
-
-1. **Build production**
-   ```bash
    cd frontend
-   npm run build
+   vercel
    ```
 
-2. **Create S3 bucket**
-   ```bash
-   aws s3 mb s3://vehicle-rental-frontend
+### Option 3: Docker Swarm (Advanced)
    aws s3 website s3://vehicle-rental-frontend \
      --index-document index.html
    ```

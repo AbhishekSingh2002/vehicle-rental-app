@@ -1,0 +1,59 @@
+// prisma/schema.prisma
+// Run: npx prisma migrate dev --name init
+// Then: npm run seed
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model VehicleType {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  wheels   Int
+  vehicles Vehicle[]
+
+  @@index([wheels])
+}
+
+model Vehicle {
+  id                 Int          @id @default(autoincrement())
+  name               String
+  registrationNumber String?      @unique
+  metadata           Json?
+  typeId             Int
+  type               VehicleType  @relation(fields: [typeId], references: [id])
+  bookings           Booking[]
+
+  @@index([typeId])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bookings  Booking[]
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  vehicleId Int
+  userId    Int
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  status    String   @default("confirmed")
+  createdAt DateTime @default(now())
+
+  @@index([vehicleId, startDate, endDate])
+  @@index([userId])
+}
